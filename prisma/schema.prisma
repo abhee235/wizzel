@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // Adjust based on your database provider
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement()) // Primary auto-increment ID for User
+  userId        String         @unique                      // Unique string identifier for each user
+  email         String         @unique                      // User email
+  name          String?
+  projects      Project[]      // Relation to Projects created by the user
+  fabricObjects FabricObject[] // Optional relation to FabricObjects created by the user
+  designs       Design[]       // Relation to Designs created by the user
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  isDeleted     Boolean        @default(false)              // Soft delete flag
+}
+
+model Project {
+  id            Int            @id @default(autoincrement()) // Primary auto-increment ID for Project
+  projectId     String         @unique                      // Unique string identifier for each project
+  name          String                                       // Project name
+  userId        String?                                      // Optional foreign key to User
+  user          User?         @relation(fields: [userId], references: [userId])
+  fabricObjects FabricObject[] // Relation to FabricObjects within the project
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  isDeleted     Boolean        @default(false)              // Soft delete flag
+}
+
+model Design {
+  id            Int            @id @default(autoincrement()) // Primary auto-increment ID for Design
+  designId      String         @unique                      // Unique string identifier for each design (Canvas ID)
+  title         String                                       // Design name
+  description   String      
+  status        String
+  previewImage  String         @default("")
+  fabricObjects FabricObject[] // Relation to FabricObjects within the design
+
+   // Add userId field and relation to User model
+  userId        String?                                      // Optional foreign key to User
+  user          User?         @relation(fields: [userId], references: [userId])
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  isDeleted     Boolean        @default(false)              // Soft delete flag
+}
+
+model FabricObject {
+  id                   Int       @id @default(autoincrement()) // Primary auto-increment ID for each object
+  objectId             String    @unique                      // Unique identifier for each Fabric object
+  shapeData            String                                  // JSON column to store shape data properties
+  shapeCustomProperties String                                 // JSON column to store custom properties
+  
+  // Node-related property
+  nodeId               String                                 // Unique node identifier for spatial location (based on tile)
+
+  // Required associations
+  designId             String                                 // Mandatory association to Design (Canvas)
+  design               Design    @relation(fields: [designId], references: [designId])
+
+  // Optional metadata associations
+  userId               String?                                 // Optional association to User
+  projectId            String?                                 // Optional association to Project
+  user                 User?     @relation(fields: [userId], references: [userId])
+  project              Project?  @relation(fields: [projectId], references: [projectId])
+
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  isDeleted            Boolean   @default(false)              // Soft delete flag
+}
+
+model UserPreference {
+  id                Int       @id @default(autoincrement())       // Primary key
+  userId            String                                        // Identifier for the user (no relation)
+  designId          String                                        // Identifier for the design (no relation)
+  canvasData        String?                                       // JSON stringified data of the canvas (e.g., layers, shapes)
+  theme             String     @default("light")                  // Theme preference (e.g., "dark" or "light")
+  zoomLevel         Float      @default(1.0)                      // Last zoom level (1.0 = 100%)
+  lastActiveLayerId String?                                       // ID of the last active layer or object on the canvas
+  viewportTransform String?                                       // JSON string of Fabric's viewport transformation matrix
+  gridVisibility    Boolean    @default(true)                     // Whether the grid is visible on the canvas
+
+  createdAt         DateTime   @default(now())                    // When the preference was created
+  updatedAt         DateTime   @updatedAt                         // When the preference was last updated
+  isDeleted         Boolean    @default(false)                    // Soft delete flag
+
+  @@unique([userId, designId]) // Each user-design pair should be unique
+}
