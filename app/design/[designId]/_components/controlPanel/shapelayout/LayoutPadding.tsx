@@ -1,5 +1,5 @@
-import React from 'react';
-import ScrubInput from '@/components/ui/scrubInput';
+import React, {memo} from 'react';
+import ScrubInput from '@/components/ui/scrub-input';
 
 type Props = {
   type: string;

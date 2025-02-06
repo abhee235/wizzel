@@ -1,7 +1,6 @@
 import React, { useRef, useState, memo } from 'react';
 import { Input } from '@/components/ui/input';
-import ScrubbyInput from '@/components/ui/scrubInput';
-import ScrubInput from '@/components/ui/scrubInput';
+import ScrubInput from '@/components/ui/scrub-input';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 

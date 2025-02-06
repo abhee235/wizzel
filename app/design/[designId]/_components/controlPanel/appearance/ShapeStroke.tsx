@@ -6,7 +6,7 @@ import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { faChevronDown, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@/components/ui/button';
 import { faMinus } from '@fortawesome/free-solid-svg-icons';
-import ScrubInput from '@/components/ui/scrubInput';
+import ScrubInput from '@/components/ui/scrub-input';
 import { Select, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { SelectContent } from '@radix-ui/react-select';
 

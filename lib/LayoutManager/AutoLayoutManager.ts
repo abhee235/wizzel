@@ -7,21 +7,22 @@ import {
   StrictLayoutContext,
   LayoutResult,
 } from 'fabric';
-import { AutoLayoutStrategy } from './AutoLayoutStrategy';
+import { AutoLayoutStrategy } from './../LayoutStrategy/AutoLayoutStrategy';
 import {
   ALIGNMENT_POSITIONS,
   LAYOUT_DIRECTIONS,
-} from './LayoutStrategyConstant';
-import { FrameLayoutManager } from './FrameLayoutManager';
+} from './LayoutConstant';
+//import { FrameLayoutManager } from './FrameLayoutManager';
 import {
   LAYOUT_TYPE_ADDED,
   LAYOUT_TYPE_INITIALIZATION,
-} from './FrameLayoutManager';
-import { AutoLayout } from './AutoLayout';
+} from './LayoutConstant';
+import { AutoLayout } from '@/lib/shapes/AutoLayout';
 
 interface AutoLayoutResult {
   center: Point;
   size: Point;
+  
 }
 
 interface InsertionResult {
@@ -101,7 +102,7 @@ function alignAxis(
   }
 }
 
-export class AutoLayoutManager extends FrameLayoutManager {
+export class AutoLayoutManager extends fabric.LayoutManager {
   declare initialHeight: number;
   declare initialWidth: number;
   private lockedIndex: number | null = null;

@@ -1,15 +1,14 @@
 import * as fabric from 'fabric';
-import { cursors } from './../canvas-cursor';
-import { treatAngle } from './../canvas-cursor';
-import { changeLength } from './changeObjectLength';
-import { changeLayoutDimensions } from './changeLayoutDimensions';
+import { cursors } from '@/lib/canvas-cursor';
+import { treatAngle } from '@/lib/canvas-cursor';
+import { changeLength } from '@/lib/controls/utils/changeObjectLength'
+import { changeLayoutDimensions } from '@/lib/controls/utils/changeLayoutDimension';
 import {
-  autoLayoutSpacingControls,
-  AutoLayoutSpacingControls,
+ 
   createAutoLayoutSpacingControls,
-  createAutoSpacingControl,
-} from './autoLayoutSpacingControls';
-import { AutoLayout } from '../AutoLayout';
+
+} from './autolayoutSpacingControls';
+import { AutoLayout } from '@/lib/shapes/AutoLayout';
 
 const controlRotation = { ml: 45, mr: 135, mt: 225, mb: 315 };
 function rotationStyleHandler(eventData, control, fabricObject) {

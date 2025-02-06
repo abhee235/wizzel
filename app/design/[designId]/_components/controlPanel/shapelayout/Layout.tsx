@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Input } from '@/components/ui/input';
-import ScrubInput from '@/components/ui/scrubInput';
+import ScrubInput from '@/components/ui/scrub-input';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsToCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -19,7 +19,7 @@ type Props = {
   handleInputChange: (property: string, value: string) => void;
 };
 
-const LayoutControls = ({
+const Layout = ({
   type,
   width,
   height,
@@ -74,4 +74,4 @@ const LayoutControls = ({
   );
 };
 
-export default memo(LayoutControls);
+export default memo(Layout);

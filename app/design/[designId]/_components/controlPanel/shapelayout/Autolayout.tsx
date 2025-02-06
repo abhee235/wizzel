@@ -1,10 +1,10 @@
-import React from 'react';
+import React,{memo} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsToCircle } from '@fortawesome/free-solid-svg-icons';
-import ScrubInput from '@/components/ui/scrubInput';
-import AutoLayoutAlignments from './AutoLayoutAlignments';
-import LayoutPaddings from './LayoutPaddings';
-import { AutoLayoutStrategy } from '@/lib/AutoLayoutStrategy';
+import ScrubInput from '@/components/ui/scrub-input';
+import AutoLayoutAlignments from './Alignment';
+import LayoutPaddings from './LayoutPadding';
+import { AutoLayoutStrategy } from '@/lib/LayoutStrategy/AutoLayoutStrategy';
 
 type Props = {
   type: string;

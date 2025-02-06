@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ScrubInput from '@/components/ui/scrubInput';
+import ScrubInput from '@/components/ui/scrub-input';
 import { Button } from '@/components/ui/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {

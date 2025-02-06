@@ -122,7 +122,7 @@ export const navElements = [
   },
 ];
 
-export const defaultNavElement = {
+export const defaultToolbarAction = {
   icon: '/assets/select.svg',
   name: 'Select',
   value: 'select',

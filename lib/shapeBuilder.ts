@@ -1,9 +1,8 @@
 import * as fabric from 'fabric';
 import { v4 as uuidv4 } from 'uuid';
-//import { Container } from './container';
-import { Frame } from './frame';
-import PolygonShape from './PolygonShape';
-import Star from './star';
+import { Frame } from '@/lib/shapes/Frame';
+import PolygonShape from '@/lib/shapes/PolygonShape';
+import Star from '@/lib/shapes/Star';
 
 import {
   CustomFabricObject,
@@ -17,18 +16,15 @@ import {
   polygonSideControl,
   starInnerRadiusControl,
   uniformRadiusControl,
-} from './controls';
-import Arrow from './arrow';
-import {
-  applyDynamicControls,
-  createSideControl,
-  customControl,
-  getControls,
-} from './shapeControls';
-import { Container } from './container';
-import { autoLayoutControls } from './Controls/AutoLayoutControls';
-import { textControls } from './Controls/TextControls';
-import { TextInput } from './textInput';
+} from '@/lib/controls/customControls';
+import Arrow from '@/lib/shapes/Arrow';
+import { defaultControls }
+
+ from '@/lib/controls/defaultControls';
+import { autoLayoutControls } from '@/lib/controls/autolayout/autolayoutcontrols';
+import { textControls } from '@/lib/controls/text/textControls';
+import { TextInput } from './shapes/TextInput';
+//import { TextInput } from './textInput';
 
 export const shapeCustomProperties = {
   name: 'shape',
@@ -70,7 +66,7 @@ export const createRectangle = (pointer: PointerEvent) => {
   rectObj.controls = {
     ...fabric.Rect.createControls().controls,
     uniformRadiusControl,
-    ...customControl(rectObj, controls),
+    ...defaultControls(rectObj),
   };
   //applyDynamicControls(rect);
   return rectObj;
@@ -94,7 +90,7 @@ export const createTriangle = (pointer: PointerEvent) => {
 
   triangle.controls = {
     ...fabric.Rect.createControls().controls,
-    ...customControl(triangle),
+    ...defaultControls(triangle),
   };
 
   return triangle;
@@ -186,7 +182,7 @@ export const createCircle = (pointer: PointerEvent) => {
   circle.controls = {
     ...fabric.Circle.createControls().controls,
     arcMouseControl,
-    ...customControl(circle),
+    ...defaultControls(circle),
   };
   return circle;
 };
@@ -214,7 +210,7 @@ export const createPolygon = (pointer: PointerEvent) => {
     polygonRadiusControl: polygonRadiusControl,
     polygonSideControl: polygonSideControl,
     starInnerRadiusControl: starInnerRadiusControl,
-    ...customControl(polygon),
+    ...defaultControls(polygon),
   };
   polygon.controls = controls;
   return polygon;
@@ -245,7 +241,7 @@ export const createStar = (pointer: PointerEvent) => {
     polygonRadiusControl: polygonRadiusControl,
     polygonSideControl: polygonSideControl,
     starInnerRadiusControl: starInnerRadiusControl,
-    ...customControl(polygon),
+    ...defaultControls(polygon),
   };
   polygon.controls = controls;
   return polygon;
@@ -334,7 +330,7 @@ export const createFrame = (pointer: PointerEvent) => {
   };
   // frame.controls = {
   //   ...fabric.Rect.createControls().controls,
-  //   ...customControl(frame),
+  //   ...defaultControls(frame),
   // };
 
   //container.setCoords();

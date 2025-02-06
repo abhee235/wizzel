@@ -19,8 +19,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { fontFamilyOptions } from '../../constants';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { ScrollBar } from '@/components/ui/scrollArea';
+import {ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export interface FontOptionsProps {
   inputRef: any;
@@ -68,58 +67,58 @@ const FontOptions = ({
     fontFamilyOptions.find((font) => font.value === selectedFontFamily)
       ?.label || 'Inter';
 
-  return (
-    <div className="mt-2 py-1">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-full h-6 text-[13px] justify-between font-normal"
-          >
-            {displayFontLabel}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
-          <ScrollArea className="w-56 h-full whitespace-nowrap rounded-md border">
-            <Command>
-              <CommandInput placeholder="Search fonts" />
-              <CommandList onMouseLeave={resetPreview}>
-                <CommandEmpty>No font found.</CommandEmpty>
-                <CommandGroup>
-                  {fontFamilyOptions.map((font) => (
-                    <CommandItem
-                      key={font.value}
-                      className="text-[16px] h-8"
-                      value={font.value}
-                      onSelect={() => handleFontFamilySelect(font.value)}
-                      onMouseEnter={() => handlePreviewFontFamily(font.value)}
-                      style={{ fontFamily: ${font.value} }}
-                    >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          selectedFontFamily === font.value
-                            ? 'opacity-100'
-                            : 'opacity-0'
-                        )}
-                      />
-                      <span style={{ fontFamily: ${font.value} }}>
-                        {font.label}
-                      </span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-            <ScrollBar orientation="vertical" />
-          </ScrollArea>
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
+      return (
+        <div className="mt-2 py-1">
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full h-6 text-[13px] justify-between font-normal"
+              >
+                {displayFontLabel}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <ScrollArea className="w-56 h-full whitespace-nowrap rounded-md border">
+                <Command>
+                  <CommandInput placeholder="Search fonts" />
+                  <CommandList onMouseLeave={resetPreview}>
+                    <CommandEmpty>No font found.</CommandEmpty>
+                    <CommandGroup>
+                      {fontFamilyOptions.map((font) => (
+                        <CommandItem
+                          key={font.value}
+                          className="text-[16px] h-8"
+                          value={font.value}
+                          onSelect={() => handleFontFamilySelect(font.value)}
+                          onMouseEnter={() => handlePreviewFontFamily(font.value)}
+                          style={{ fontFamily: font.value }}  // ✅ Corrected
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              selectedFontFamily === font.value
+                                ? 'opacity-100'
+                                : 'opacity-0'
+                            )}
+                          />
+                          <span style={{ fontFamily: font.value }}>  {/* ✅ Corrected */}
+                            {font.label}
+                          </span>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+                <ScrollBar orientation="vertical" />
+              </ScrollArea>
+            </PopoverContent>
+          </Popover>
+        </div>
+      );      
 };
 
 export default memo(FontOptions);

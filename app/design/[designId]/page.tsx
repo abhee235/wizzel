@@ -1,58 +1,33 @@
 'use client';
 
-import Image from 'next/image';
-import Navbar from './_components/ui/Navbar';
 import { useRef, useState, useEffect, use, useCallback } from 'react';
-import { ActiveElement, Attributes } from './_components/types/type';
+import { ActiveElement, Attributes } from './_components/types/types';
 import * as fabric from 'fabric';
-import Surface from './_components/ui/Surface';
-import { defaultNavElement } from './_components/constants';
+import Editor from './_components/ui/Editor';
+import { defaultToolbarAction } from './_components/constants';
 import {
-  initializeFabric,
-  handleCanvasMouseDown,
-  handleCanvaseMouseMove,
-  renderCanvas,
-  handleCanvasMouseUp,
-  handlePathCreated,
-  handleCanvasObjectModified,
-  handleCanvasObjectMoving,
-  handleCanvasSelectionCreated,
-  handleCanvasObjectScaling,
-  handleCanvasZoom,
-  handleResize,
   drawGrid,
-  handleCanvasMouseOver,
-} from '@/lib/canvas';
+  initializeCanvasEvents
+} from '@/lib/events/canvas-events/canvas-events';
 //import useLocalStorage from '@/hooks/useLocalStorage';
+import { initializeFabric } from '@/lib/events/canvas-events/canvas';
 import {
-  handleDelete,
+  //handleDelete,
   handleCopy,
   handlePaste,
   handleKeyDown,
-} from '@/lib/key-events';
+} from '@/lib/events/key-events';
 import LeftSidebar from './_components/ui/LeftSidebar';
 import ControlPanel from './_components/ui/ControlPanel';
-import useBroadcastEvent from '@/hooks/useBroadcastEvent';
-import useEventListener from '@/hooks/useEventListner';
-import useIntervals from '@/hooks/useIntervals';
-import usePersistentClientId from '@/hooks/usePersistentClientId';
+//import useIntervals from '@/hooks/useIntervals';
+//import usePersistentClientId from '@/hooks/usePersistentClientId';
 //import useCanvasReducer from "../app/store/reducers/canvas";
-import CanvasProvider from '@/providers/CanvasProvider';
-import { useSelector } from '@/hooks/useSelector';
-import { useDispatch } from '@/hooks/useDispatch';
-// import {
-//   addShapeToCanvas,
-//   removeShapeFromCanvas,
-//   modifyShapeInCanvas,
-//   resetCanvas,
-//   undo,
-//   redo,
-//   syncShapes,
-// } from '../../../store/actions/canvas';
+//import CanvasProvider from '@/providers/CanvasProvider';
+//import { useSelector } from '@/hooks/useSelector';
 import { useUnit } from 'effector-react';
 import { $canvasStore, $selectedObject } from '@/store/canvas-store';
 import { $inboundDeltas, clearInboundDeltas } from '@/store/inbound-deltas';
-import { $patchBuffer } from '@/store/patch-buffer';
+import ThreadOverlay from './_components/thread/ThreadOverlay';
 import {
   addObject,
   removeObject,
@@ -66,8 +41,7 @@ import {
   activeSelectionBox,
   shapeCustomProperties,
   updateHighlightedShpaes,
-} from '@/lib/shapes';
-import { getShapeInfo } from '@/lib/utils';
+} from '@/lib/shapeBuilder';
 //import usePeriodicStoreSave from '@/hooks/usePeriodicStoreSave';
 import {
   saveCanvasObjectsToDatabase,
@@ -78,7 +52,7 @@ import { restoreUserPreferences } from './_components/helper';
 import { saveUserPreferences } from '@/actions/user/saveUserPreference';
 import { getUserPreferences } from '@/actions/user/getUserPreference';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { UserPreferenceInput, Disign, UpdateDesignData } from '@/types/type';
+import { UserPreferenceInput, UpdateDesignData } from '@/types/types';
 import { updateDesign } from '@/actions/dashboard/updateDesign';
 import { getDesignDetails } from '@/actions/dashboard/getDesign';
 import { Design } from '@prisma/client';
@@ -87,21 +61,14 @@ import {
   createGrid,
   genrateDesignPreviewImage,
 } from '@/lib/canvas-helper';
-import ThreadOverlay from './_components/Thread/ThreadOverlay';
-import NewThread from './_components/Thread/NewThread';
-import { cursors } from '@/lib/canvas-cursor';
 import { reset, syncObjects } from '@/store/canvas-events';
 import {
   renderCanvasWithDeltas,
   renderFullCanvas,
-  resumeRendering,
-  batchUpdateCanvas,
-  pauseRendering,
 } from '@/lib/renderer';
-import { initializeCanvasEvents } from '@/lib/canvasEvents';
-import debounce from 'lodash.debounce';
-import LiveBoardManager, { BoardShape } from '@/Collaboration/LiveBoardManager';
+import LiveEditorManager, { BoardShape } from '@/collaboration/LiveEditorManager';
 import { $boardInitStore, resetBoardInit } from '@/store/board-init-store';
+import Toolbar from './_components/ui/Toolbar';
 
 function throttle(func: (...args: any[]) => void, limit: number) {
   let inThrottle: boolean;
@@ -179,7 +146,7 @@ export default function Home({
     clearDeltas,
   ]);
   const [inboundDeltas] = useUnit([$inboundDeltas]);
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
   const [highlightedShape, setHighlightedShape] =
     useState<fabric.Object | null>(null);
   const highlightedLayerRef = useRef<fabric.Object | null>(null);
@@ -361,7 +328,7 @@ export default function Home({
   }, [canvasRef, fabricRef]);
 
   //const clientId = useRef('client_' + Math.random().toString(36).substr(2, 9));
-  const clientId = usePersistentClientId();
+  const clientId = "lasjflksdjfl";// usePersistentClientId();
 
   useEffect(() => {
     //console.log('saving in database', canvasObjectsRef.current);
@@ -723,17 +690,6 @@ export default function Home({
     if (isLocalUpdate.current) isLocalUpdate.current = isEventRunning;
   }, [isEventRunning]);
 
-  // Listen for shape changes broadcasted by other clients and sync the canvas
-  useEventListener({
-    eventName: 'canvasObjects',
-    callback: (data: any) => {
-      if (data.clientId !== clientId) {
-        //console.log("Received canvas data from another client:", data);
-        //dispatch(syncShapes(data.canvasObjects));
-        handleSyncObject(data.canvasObject);
-      }
-    },
-  });
 
   const deleteAllShapes = () => {
     //dispatch(resetCanvas());
@@ -817,22 +773,22 @@ export default function Home({
       if (canvasElementRef.current) canvasElementRef.current.dispose();
       stopContinuousPanning();
       //remove the event listeners
-      window.removeEventListener('resize', () => {
-        handleResize({
-          canvas: null,
-        });
-      });
+      // window.removeEventListener('resize', () => {
+      //   handleResize({
+      //     canvas: null,
+      //   });
+      // });
 
-      window.removeEventListener('keydown', (e) =>
-        handleKeyDown({
-          e,
-          canvas: fabricRef.current,
-          undo: handleUndo,
-          redo: handleRedo,
-          syncShapeInStorage: throttledSyncShapeInStorage,
-          deleteShapeFromStorage,
-        })
-      );
+      // window.removeEventListener('keydown', (e) =>
+      //   handleKeyDown({
+      //     e,
+      //     canvas: fabricRef.current,
+      //     undo: handleUndo,
+      //     redo: handleRedo,
+      //     syncShapeInStorage: throttledSyncShapeInStorage,
+      //     deleteShapeFromStorage,
+      //   })
+      // );
     };
   }, [canvasElementRef]);
 
@@ -853,14 +809,14 @@ export default function Home({
       case 'reset':
         deleteAllShapes();
         fabricRef.current?.clear();
-        setActiveElement(defaultNavElement);
+        setActiveElement(defaultToolbarAction);
         break;
 
       case 'delete':
         // delete it from the canvas
         handleDelete(fabricRef.current as any, deleteShapeFromStorage);
         // set "select" as the active element
-        setActiveElement(defaultNavElement);
+        setActiveElement(defaultToolbarAction);
         break;
 
       // upload an image to the canvas
@@ -895,7 +851,7 @@ export default function Home({
         setTriggerNewThread={setTriggerNewThread}
       />
 
-      <Navbar
+      <Toolbar
         imageInputRef={imageInputRef}
         activeElement={activeElement}
         // handleImageUpload={(e: any) => {
@@ -922,7 +878,7 @@ export default function Home({
           handleShapePresence={handleShapePresence}
           handleShapeHighlight={handleShapeHighlightFromLayer}
         />
-        <LiveBoardManager
+        {/* <LiveEditorManager
           boardCore={{
             designId: designId,
             cursorPosition: {
@@ -938,8 +894,8 @@ export default function Home({
             onUserFollow: (cb: (payload: any) => void) => () => {},
             onScroll: (cb: () => void) => () => {},
           }}
-        />
-        <Surface
+        /> */}
+        <Editor
           canvasRef={canvasRef}
           clientId={clientId}
           showDrawingCursor={true}

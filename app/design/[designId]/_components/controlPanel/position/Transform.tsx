@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '../../../../../../components/ui/button';
 import { Input } from '../../../../../../components/ui/input';
-import ScrubInput from '@/components/ui/scrubInput';
+import ScrubInput from '@/components/ui/scrub-input';
 
 const Transform = ({ angle, handleInputChange }) => {
   const x = 0;

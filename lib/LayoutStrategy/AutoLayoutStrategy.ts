@@ -13,14 +13,9 @@ import {
 import {
   ALIGNMENT_POSITIONS,
   LAYOUT_DIRECTIONS,
-} from '@/lib//LayoutStrategyConstant';
-import {
-  LAYOUT_TYPE_ADDED,
   LAYOUT_TYPE_IMPERATIVE,
   LAYOUT_TYPE_INITIALIZATION,
-  LAYOUT_TYPE_OBJECT_MODIFYING,
-} from './FrameLayoutManager';
-import { LAYOUT_TYPE_OBJECT_MODIFIED } from './container';
+} from '@/lib/LayoutManager/LayoutConstant';
 
 /**
  * Interface for the options passed to AutoLayoutStrategy
